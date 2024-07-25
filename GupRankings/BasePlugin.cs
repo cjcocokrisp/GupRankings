@@ -1,4 +1,5 @@
 using BepInEx;
+using GupRankings.RankingDisplay;
 using RoR2;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -19,14 +20,15 @@ namespace GupRankings
         public const string PluginAuthor = "AuthorName";
         public const string PluginName = "ExamplePlugin";
         public const string PluginVersion = "1.0.0";
+        internal GupRankings.RankingDisplay.RankingDisplay rankDisplay;
 
         // We need our item definition to persist through our functions, and therefore make it a class field.
-        private static ItemDef myItemDef;
 
         // The Awake() method is run at the very start when the game is initialized.
         public void Awake()
         {
             // Init our logging class so that we can properly log for debugging
+            rankDisplay = new GupRankings.RankingDisplay.RankingDisplay();
             Log.Init(Logger);
         }
 

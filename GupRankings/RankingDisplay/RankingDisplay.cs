@@ -68,10 +68,21 @@ namespace GupRankings.RankingDisplay
                     track = obj.transform;
                 }
             }
-            PlayerStatsComponent stats = LocalUserManager.GetFirstLocalUser().cachedStatsComponent;
-            string name = LocalUserManager.GetFirstLocalUser().userProfile.name;
 
-            if (text) text.SetText(name + "\n" + "Total Damage: " + stats.recordedStats.GetStatValueString(StatDef.totalDamageDealt) + "\n" + "Total Gold: " + stats.recordedStats.GetStatValueString(StatDef.goldCollected));
+            string teststr = "Total Damage Dealt Stats:\n";
+            foreach (var playerCharacterMaster in PlayerCharacterMasterController.instances)
+            {
+                try
+                {
+                    StatSheet stats = playerCharacterMaster.master.playerStatsComponent.currentStats;
+                    teststr += playerCharacterMaster.GetDisplayName() + ": " + stats.GetStatValueString(StatDef.totalDamageDealt) + "\n";
+                } catch
+                {
+                    Debug.Log(playerCharacterMaster.GetDisplayName() + " has thrown an exception...");
+                }
+            }
+
+            if (text) text.SetText(teststr);
             if (!textObj) textObj.SetActive(true);
         }
     }

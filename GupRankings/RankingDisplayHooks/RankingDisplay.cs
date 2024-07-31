@@ -8,6 +8,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.AddressableAssets;
 using RoR2.Stats;
+using UnityEngine.Networking;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using R2API.Networking.Interfaces;
+using R2API.Networking;
 
 namespace GupRankings.RankingDisplay
 {
@@ -19,7 +23,6 @@ namespace GupRankings.RankingDisplay
         TextMeshProUGUI text;
         GameObject textObj = null;
         Transform track;
-
 
         public RankingDisplay()
         {
@@ -82,7 +85,12 @@ namespace GupRankings.RankingDisplay
                 }
             }
 
-            if (text) text.SetText(teststr);
+            if (NetworkServer.active)
+            {
+                new GupRankings.SortStats.SyncStats(LocalUserManager.GetFirstLocalUser().currentNetworkUser.netId, teststr).Send(NetworkDestination.Clients);
+            }
+
+            if (text) text.SetText(GupRankings.SortStats.SyncStats.statsStatic);
             if (!textObj) textObj.SetActive(true);
         }
     }

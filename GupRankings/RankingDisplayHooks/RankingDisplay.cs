@@ -12,8 +12,9 @@ using UnityEngine.Networking;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using R2API.Networking.Interfaces;
 using R2API.Networking;
+using GupRankings.SortStatsNetMessage;
 
-namespace GupRankings.RankingDisplay
+namespace GupRankings.RankingDisplayHooks
 {
     public class RankingDisplay : IBase
     {
@@ -57,7 +58,7 @@ namespace GupRankings.RankingDisplay
                     layoutGroup = obj.GetComponent<VerticalLayoutGroup>();
                     text = obj.GetComponentInChildren<TextMeshProUGUI>();
                     layoutElement = obj.GetComponentInChildren<LayoutElement>();
-                    
+
                     r.localPosition = Vector3.zero;
                     r.localEulerAngles = Vector3.zero;
                     r.localScale = Vector3.one;
@@ -72,25 +73,36 @@ namespace GupRankings.RankingDisplay
                 }
             }
 
-            string teststr = "Total Damage Dealt Stats:\n";
-            foreach (var playerCharacterMaster in PlayerCharacterMasterController.instances)
-            {
-                try
-                {
-                    StatSheet stats = playerCharacterMaster.master.playerStatsComponent.currentStats;
-                    teststr += playerCharacterMaster.GetDisplayName() + ": " + stats.GetStatValueString(StatDef.totalDamageDealt) + "\n";
-                } catch
-                {
-                    Debug.Log(playerCharacterMaster.GetDisplayName() + " has thrown an exception...");
-                }
-            }
-
             if (NetworkServer.active)
             {
-                new GupRankings.SortStats.SyncStats(LocalUserManager.GetFirstLocalUser().currentNetworkUser.netId, teststr).Send(NetworkDestination.Clients);
+                int players = 1;
+                string statString = "";
+                foreach (var playerCharacterMaster in PlayerCharacterMasterController.instances)
+                {
+                    try
+                    {
+                        // The nullplayer thing is for debug will be removed on release
+                        StatSheet stats = playerCharacterMaster.master.playerStatsComponent.currentStats;
+                        if (playerCharacterMaster.GetDisplayName().Equals("") || playerCharacterMaster.GetDisplayName().Equals(" "))
+                        {
+                            statString += $"nullplayer{players}" + "\t" + stats.GetStatValueString(StatDef.totalDamageDealt) + "\n";
+                            players++;
+                        }
+                        else
+                        { 
+                            statString += playerCharacterMaster.GetDisplayName() + "\t" + stats.GetStatValueString(StatDef.totalDamageDealt) + "\n";
+                        }
+                    } 
+                    catch
+                    {
+                        Debug.Log(playerCharacterMaster.GetDisplayName() + " has thrown an exception...");
+                    }
+                }
+                new SortStats(LocalUserManager.GetFirstLocalUser().currentNetworkUser.netId, statString.Substring(0, statString.Length - 1)).Send(NetworkDestination.Clients);
+                SortStats.HostSync(statString.Substring(0, statString.Length - 1));
             }
 
-            if (text) text.SetText(GupRankings.SortStats.SyncStats.statsStatic);
+            if (text) text.SetText(SortStats.sortedStatDisplay);
             if (!textObj) textObj.SetActive(true);
         }
     }

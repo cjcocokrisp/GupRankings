@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using R2API.Networking.Interfaces;
 using Rewired.Integration.UnityUI;
@@ -16,6 +17,8 @@ namespace GupRankings.SortStatsNetMessage
     {
         private NetworkInstanceId netId;
         private string rawStats;
+        private StatRankings selectedStat;
+        public static string statLabel = "none";
         private List<KeyValuePair<string, ulong>> statsData; // key is the players username and value is the stat value
         public static string sortedStatDisplay;
         private bool changed;
@@ -24,14 +27,16 @@ namespace GupRankings.SortStatsNetMessage
         {
             rawStats = "";
             statsData = new List<KeyValuePair<string, ulong>>();
-            sortedStatDisplay = "<color=#ff8300>Leaderboard (Total Damage Dealt):</color>\nIF YOU SEE THIS THERE IS A PROBLEM!!!\nPLEASE REPORT IT TO THE GITHUB ISSUES PAGE!";
+            sortedStatDisplay = $"<color=#ff8300>Leaderboard ({statLabel}):</color>\nIF YOU SEE THIS THERE IS A PROBLEM!!!\nPLEASE REPORT IT TO THE GITHUB ISSUES PAGE!";
             changed = false;
         }
 
-        public SortStats(NetworkInstanceId netId, string stats)
+        public SortStats(NetworkInstanceId netId, string stats, StatRankings selectedStat, string statName)
         {
             this.netId = netId;
             this.rawStats = stats;
+            this.selectedStat = selectedStat;
+            statLabel = statName;
         }
 
         public void Deserialize(NetworkReader reader)
@@ -47,6 +52,8 @@ namespace GupRankings.SortStatsNetMessage
             {
                 changed = false;
             }
+            selectedStat = (StatRankings)reader.ReadInt32();
+            statLabel = reader.ReadString();
         }
 
         public void OnReceived()
@@ -61,7 +68,10 @@ namespace GupRankings.SortStatsNetMessage
                     statsData.Add(new KeyValuePair<string, ulong>(playerData[0], ulong.Parse(playerData[1])));
                 }
                 // Sort the stats 
-                statsData.Sort(PlayerStatsComparisonLess); // Get player with highest at front for now
+                if (selectedStat == StatRankings.LeastDamageTaken) // There are less stats that take least so add to this conditional to add more, will refactor this at some point
+                    statsData.Sort(PlayerStatsComparisonGreater); // Get player with least in the front
+                else
+                    statsData.Sort(PlayerStatsComparisonLess); // Get player with highest in the front
                 // Set display string
                 SetDisplayString(statsData);
             }
@@ -71,11 +81,13 @@ namespace GupRankings.SortStatsNetMessage
         {
             writer.Write(netId);
             writer.Write(rawStats);
+            writer.Write((int)selectedStat);
+            writer.Write(statLabel);
         }
 
         private static void SetDisplayString(List<KeyValuePair<string, ulong>> data)
         {
-            sortedStatDisplay = "<color=#ff8300>Leaderboard (Total Damage Dealt):</color>\n";
+            sortedStatDisplay = $"<color=#ff8300>Leaderboard ({statLabel}):</color>\n";
             int position = 1;
             foreach (var player in data)
             {
@@ -98,8 +110,9 @@ namespace GupRankings.SortStatsNetMessage
             }
         }
 
-        public static void HostSync(string s)
+        public static void HostSync(string s, StatRankings selectedStat, string statName)
         {
+            statLabel = statName;
             List<KeyValuePair<string, ulong>> statsDataTemp = new List<KeyValuePair<string, ulong>>();
             foreach (string playerRaw in s.Split('\n'))
             {
@@ -107,8 +120,10 @@ namespace GupRankings.SortStatsNetMessage
                 statsDataTemp.Add(new KeyValuePair<string, ulong>(playerData[0], ulong.Parse(playerData[1])));
             }
             // Sort the stats 
-            statsDataTemp.Sort(PlayerStatsComparisonLess); // Get player with highest at front for now
-            // Set display string
+            if (selectedStat == StatRankings.LeastDamageTaken) 
+                statsDataTemp.Sort(PlayerStatsComparisonGreater); 
+            else
+                statsDataTemp.Sort(PlayerStatsComparisonLess);
             SetDisplayString(statsDataTemp);
         }
 

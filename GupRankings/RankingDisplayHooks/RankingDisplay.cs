@@ -13,6 +13,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using R2API.Networking.Interfaces;
 using R2API.Networking;
 using GupRankings.SortStatsNetMessage;
+using System.Collections.Generic;
 
 namespace GupRankings.RankingDisplayHooks
 {
@@ -24,9 +25,20 @@ namespace GupRankings.RankingDisplayHooks
         TextMeshProUGUI text;
         GameObject textObj = null;
         Transform track;
+        public Dictionary<StatRankings, StatDef> StatsMap;
 
         public RankingDisplay()
         {
+            StatsMap = new Dictionary<StatRankings, StatDef>();
+            StatsMap.Add(StatRankings.TotalOverallDamageDealt, StatDef.totalDamageDealt);
+            StatsMap.Add(StatRankings.TotalMinionDamageDealt, StatDef.totalMinionDamageDealt);
+            StatsMap.Add(StatRankings.HighestDamageDealt, StatDef.highestDamageDealt);
+            StatsMap.Add(StatRankings.TotalGoldCollected, StatDef.goldCollected);
+            StatsMap.Add(StatRankings.TotalGoldSpent, StatDef.totalGoldPurchases);
+            StatsMap.Add(StatRankings.LeastDamageTaken, StatDef.totalDamageTaken);
+            StatsMap.Add(StatRankings.TotalKills, StatDef.totalKills);
+            StatsMap.Add(StatRankings.TotalEliteKills, StatDef.totalEliteKills);
+
             Hooks();
         }
 
@@ -85,12 +97,12 @@ namespace GupRankings.RankingDisplayHooks
                         StatSheet stats = playerCharacterMaster.master.playerStatsComponent.currentStats;
                         if (playerCharacterMaster.GetDisplayName().Equals("") || playerCharacterMaster.GetDisplayName().Equals(" "))
                         {
-                            statString += $"nullplayer{players}" + "\t" + stats.GetStatValueString(StatDef.totalDamageDealt) + "\n";
+                            statString += $"nullplayer{players}" + "\t" + stats.GetStatValueString(StatsMap[BasePlugin.instance.statEnum.Value]) + "\n";
                             players++;
                         }
                         else
                         { 
-                            statString += playerCharacterMaster.GetDisplayName() + "\t" + stats.GetStatValueString(StatDef.totalDamageDealt) + "\n";
+                            statString += playerCharacterMaster.GetDisplayName() + "\t" + stats.GetStatValueString(StatsMap[BasePlugin.instance.statEnum.Value]) + "\n";
                         }
                     } 
                     catch
@@ -98,8 +110,8 @@ namespace GupRankings.RankingDisplayHooks
                         Debug.Log(playerCharacterMaster.GetDisplayName() + " has thrown an exception...");
                     }
                 }
-                new SortStats(LocalUserManager.GetFirstLocalUser().currentNetworkUser.netId, statString.Substring(0, statString.Length - 1)).Send(NetworkDestination.Clients);
-                SortStats.HostSync(statString.Substring(0, statString.Length - 1));
+                new SortStats(LocalUserManager.GetFirstLocalUser().currentNetworkUser.netId, statString.Substring(0, statString.Length - 1), BasePlugin.instance.statEnum.Value, BasePlugin.instance.statEnum.BoxedValue.ToString()).Send(NetworkDestination.Clients);
+                SortStats.HostSync(statString.Substring(0, statString.Length - 1), BasePlugin.instance.statEnum.Value, BasePlugin.instance.statEnum.BoxedValue.ToString());
             }
 
             if (text) text.SetText(SortStats.sortedStatDisplay);

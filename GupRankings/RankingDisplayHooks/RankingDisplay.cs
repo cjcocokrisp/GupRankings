@@ -26,19 +26,21 @@ namespace GupRankings.RankingDisplayHooks
         GameObject textObj = null;
         Transform track;
         public Dictionary<StatRankings, StatDef> StatsMap;
+        float originalFontSize;
 
         public RankingDisplay()
         {
-            StatsMap = new Dictionary<StatRankings, StatDef>();
-            StatsMap.Add(StatRankings.TotalOverallDamageDealt, StatDef.totalDamageDealt);
-            StatsMap.Add(StatRankings.TotalMinionDamageDealt, StatDef.totalMinionDamageDealt);
-            StatsMap.Add(StatRankings.HighestDamageDealt, StatDef.highestDamageDealt);
-            StatsMap.Add(StatRankings.TotalGoldCollected, StatDef.goldCollected);
-            StatsMap.Add(StatRankings.TotalGoldSpent, StatDef.totalGoldPurchases);
-            StatsMap.Add(StatRankings.LeastDamageTaken, StatDef.totalDamageTaken);
-            StatsMap.Add(StatRankings.TotalKills, StatDef.totalKills);
-            StatsMap.Add(StatRankings.TotalEliteKills, StatDef.totalEliteKills);
-
+            StatsMap = new Dictionary<StatRankings, StatDef>
+            {
+                { StatRankings.TotalDamageDealt, StatDef.totalDamageDealt },
+                { StatRankings.TotalMinionDamageDealt, StatDef.totalMinionDamageDealt },
+                { StatRankings.HighestDamageDealt, StatDef.highestDamageDealt },
+                { StatRankings.TotalGoldCollected, StatDef.goldCollected },
+                { StatRankings.TotalGoldSpent, StatDef.totalGoldPurchases },
+                { StatRankings.LeastDamageTaken, StatDef.totalDamageTaken },
+                { StatRankings.TotalKills, StatDef.totalKills },
+                { StatRankings.TotalEliteKills, StatDef.totalEliteKills }
+            };
             Hooks();
         }
 
@@ -79,9 +81,9 @@ namespace GupRankings.RankingDisplayHooks
 
                     text.alignment = TMPro.TextAlignmentOptions.TopLeft;
                     text.color = Color.white;
-                    text.fontSize = 10;
                     textObj = text.gameObject;
                     track = obj.transform;
+                    originalFontSize = text.fontSize;
                 }
             }
 
@@ -114,6 +116,7 @@ namespace GupRankings.RankingDisplayHooks
                 SortStats.HostSync(statString.Substring(0, statString.Length - 1), BasePlugin.instance.statEnum.Value, BasePlugin.instance.statEnum.BoxedValue.ToString());
             }
 
+            text.fontSize = BasePlugin.instance.fontSize.Value == 0 ? originalFontSize : BasePlugin.instance.fontSize.Value;
             if (text) text.SetText(SortStats.sortedStatDisplay);
             if (!textObj) textObj.SetActive(true);
         }

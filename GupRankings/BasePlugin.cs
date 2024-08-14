@@ -50,6 +50,7 @@ namespace GupRankings
         public ConfigEntry<Color> secondColor;
         public ConfigEntry<Color> thirdColor;
         public ConfigEntry<float> fontSize;
+        public ConfigEntry<float> userNameLength;
       
         public static BasePlugin instance;
 
@@ -69,6 +70,9 @@ namespace GupRankings
             fontSize = Config.Bind("Options", "Font Size", 0f, "Select the font size for the leaderboard text. Setting it to 0 will set it to the default size of the panel. The percentage equals the size.");
             ModSettingsManager.AddOption(new SliderOption(fontSize, new SliderConfig { min = 0f, max = 64f }));
 
+            userNameLength = Config.Bind("Options", "Username Length", 10f, "Select the maximum amount of characters of player's usernames that will be shown to help make everything fit. Setting it to 1 will have the full name displayed regardless. The percentage equals the size.");
+            ModSettingsManager.AddOption(new SliderOption(userNameLength, new SliderConfig { min = 1f, max = 32f }));
+
             headerColor = Config.Bind("Options", "Header Color", new Color(255, 132, 0), "Select the header color of the leaderboard.");
             ModSettingsManager.AddOption(new ColorOption(headerColor));
 
@@ -87,7 +91,6 @@ namespace GupRankings
         // The Update() method is run on every frame of the game.
         public void Update()
         {
-            Debug.Log(firstColor.Value.ToRGBHex().ToString());
         }
     }
 }

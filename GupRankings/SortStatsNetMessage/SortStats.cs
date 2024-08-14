@@ -87,23 +87,33 @@ namespace GupRankings.SortStatsNetMessage
 
         private static void SetDisplayString(List<KeyValuePair<string, ulong>> data)
         {
-            sortedStatDisplay = $"<color=#ff8300>Leaderboard ({statLabel}):</color>\n";
+            Color32 headerColor = BasePlugin.instance.headerColor.Value;
+            Color32 firstColor = BasePlugin.instance.firstColor.Value;
+            Color32 secondColor = BasePlugin.instance.secondColor.Value;
+            Color32 thirdColor = BasePlugin.instance.thirdColor.Value;
+
+            sortedStatDisplay = $"<color=#{ConvertColorToHexString(headerColor)}>Leaderboard ({statLabel}):</color>\n";
             int position = 1;
             foreach (var player in data)
             {
+                string name = player.Key;
+                if ((int)BasePlugin.instance.userNameLength.Value != 1 && player.Key.Length > (int)BasePlugin.instance.userNameLength.Value)
+                {
+                    name = name.Substring(0, (int)BasePlugin.instance.userNameLength.Value);
+                }
                 switch (position)
                 {
                     case 1:
-                        sortedStatDisplay += $"<color=#d9b807>1. {player.Key}: {player.Value}</color>\n";
+                        sortedStatDisplay += $"<color=#{ConvertColorToHexString(firstColor)}>1. {name}: {player.Value}</color>\n";
                         break;
                     case 2:
-                        sortedStatDisplay += $"<color=#c0c0c0>2. {player.Key}: {player.Value}</color>\n";
+                        sortedStatDisplay += $"<color=#{ConvertColorToHexString(secondColor)}>2. {name}: {player.Value}</color>\n";
                         break;
                     case 3:
-                        sortedStatDisplay += $"<color=#bf7739>3. {player.Key}: {player.Value}</color>\n";
+                        sortedStatDisplay += $"<color=#{ConvertColorToHexString(thirdColor)}>3. {name}: {player.Value}</color>\n";
                         break;
                     default:
-                        sortedStatDisplay += $"{position}. {player.Key}: {player.Value}\n";
+                        sortedStatDisplay += $"{position}. {name}: {player.Value}\n";
                         break;
                 }
                 position++;
@@ -135,6 +145,19 @@ namespace GupRankings.SortStatsNetMessage
         private static int PlayerStatsComparisonLess(KeyValuePair<string, ulong> x, KeyValuePair<string, ulong> y)
         {
             return Convert.ToInt32(x.Value < y.Value);
+        }
+
+        private static string ConvertColorToHexString(Color32 color)
+        {
+            byte[] rgbValues = { color.r, color.g, color.b };
+            string[] strBytes = BitConverter.ToString(rgbValues).Split('-');
+
+            string hexCode = "";
+            foreach (var strByte in strBytes){
+                hexCode += strByte;
+            }
+
+            return hexCode;
         }
     }
 }

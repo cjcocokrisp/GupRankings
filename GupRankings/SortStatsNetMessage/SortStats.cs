@@ -92,7 +92,8 @@ namespace GupRankings.SortStatsNetMessage
             Color32 secondColor = BasePlugin.instance.secondColor.Value;
             Color32 thirdColor = BasePlugin.instance.thirdColor.Value;
 
-            sortedStatDisplay = $"<color=#{ConvertColorToHexString(headerColor)}>Leaderboard ({statLabel}):</color>\n";
+            sortedStatDisplay = $"<color=#{ConvertColorToHexString(headerColor)}>{statLabel}</color>\n" +
+                                $"<color=#{ConvertColorToHexString(headerColor)}>Leaderboard:</color>\n";
             int position = 1;
             foreach (var player in data)
             {

@@ -79,11 +79,14 @@ namespace GupRankings.RankingDisplayHooks
                     layoutGroup.enabled = false;
                     layoutGroup.enabled = true;
 
-                    text.alignment = TMPro.TextAlignmentOptions.TopLeft;
-                    text.color = Color.white;
-                    textObj = text.gameObject;
-                    track = obj.transform;
-                    originalFontSize = text.fontSize;
+                    if (textObj == null)
+                    {
+                        text.alignment = TMPro.TextAlignmentOptions.TopLeft;
+                        text.color = Color.white;
+                        textObj = text.gameObject;
+                        track = obj.transform;
+                        originalFontSize = text.fontSize;
+                    }
                 }
             }
 
@@ -117,7 +120,11 @@ namespace GupRankings.RankingDisplayHooks
             }
 
             text.fontSize = BasePlugin.instance.fontSize.Value == 0 ? originalFontSize : BasePlugin.instance.fontSize.Value;
-            if (text) text.SetText(SortStats.sortedStatDisplay);
+            if (text)
+            {
+                layoutElement.preferredHeight = text.fontSize * SortStats.sortedStatDisplay.Split('\n').Length;
+                text.SetText(SortStats.sortedStatDisplay);
+            }
             if (!textObj) textObj.SetActive(true);
         }
     }

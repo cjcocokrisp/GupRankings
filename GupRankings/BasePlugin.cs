@@ -13,6 +13,7 @@ using RiskOfOptions;
 using RiskOfOptions.Options;
 using RiskOfOptions.Lib;
 using RiskOfOptions.OptionConfigs;
+using System.IO;
 
 namespace GupRankings
 {
@@ -31,7 +32,6 @@ namespace GupRankings
     // This attribute is required, and lists metadata for your plugin.
     // Need to edit this at some point and get it to work right
     [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
-    [BepInDependency("com.rune580.riskofoptions")]
     public class BasePlugin : BaseUnityPlugin
     {
         // The Plugin GUID should be a unique ID for this plugin,
@@ -51,6 +51,8 @@ namespace GupRankings
         public ConfigEntry<Color> thirdColor;
         public ConfigEntry<float> fontSize;
         public ConfigEntry<float> userNameLength;
+        public byte[] imgData;
+        public Sprite logo;
       
         public static BasePlugin instance;
 
@@ -59,6 +61,12 @@ namespace GupRankings
         // The Awake() method is run at the very start when the game is initialized.
         public void Awake()
         {
+            string directory = System.IO.Path.GetDirectoryName(Info.Location);
+            imgData = File.ReadAllBytes(directory + "/icon.png");
+            Texture2D t = new Texture2D(256, 256);
+            t.LoadImage(imgData);
+            logo = Sprite.Create(t, new Rect(0f, 0f, t.width, t.height), new Vector2(0, 0));
+
             instance = this;
             On.RoR2.Networking.NetworkManagerSystemSteam.OnClientConnect += (s, u, t) => { }; // COMMENT THIS OUT ON FINAL RELEASE
             rankDisplay = new RankingDisplay();
@@ -70,27 +78,29 @@ namespace GupRankings
             fontSize = Config.Bind("Options", "Font Size", 0f, "Select the font size for the leaderboard text. Setting it to 0 will set it to the default size of the panel. The percentage equals the size.");
             ModSettingsManager.AddOption(new SliderOption(fontSize, new SliderConfig { min = 0f, max = 64f }));
 
-            userNameLength = Config.Bind("Options", "Username Length", 10f, "Select the maximum amount of characters of player's usernames that will be shown to help make everything fit. Setting it to 1 will have the full name displayed regardless. The percentage equals the size.");
+            userNameLength = Config.Bind("Options", "Username Length", 8f, "Select the maximum amount of characters of player's usernames that will be shown to help make everything fit. Setting it to 1 will have the full name displayed regardless. The percentage equals the size.");
             ModSettingsManager.AddOption(new SliderOption(userNameLength, new SliderConfig { min = 1f, max = 32f }));
 
-            headerColor = Config.Bind("Options", "Header Color", new Color(255, 132, 0), "Select the header color of the leaderboard.");
+            headerColor = Config.Bind("Options", "Header Color", new Color(1, 132f/255f, 0), "Select the header color of the leaderboard.");
             ModSettingsManager.AddOption(new ColorOption(headerColor));
 
-            firstColor = Config.Bind("Options", "First Color", new Color(217, 184, 7), "Select the first place color of the leaderboard.");
+            firstColor = Config.Bind("Options", "First Color", new Color(217f/255f, 184f/255f, 7f/255f), "Select the first place color of the leaderboard.");
             ModSettingsManager.AddOption(new ColorOption(firstColor));
 
-            secondColor = Config.Bind("Options", "Second Color", new Color(192, 192, 192), "Select the second place color of the leaderboard.");
+            secondColor = Config.Bind("Options", "Second Color", new Color(192f/255f, 192f/255f, 192f/255f), "Select the second place color of the leaderboard.");
             ModSettingsManager.AddOption(new ColorOption(secondColor));
 
-            thirdColor = Config.Bind("Options", "Third Color", new Color(191, 120, 57), "Select the third place color of the leaderboard.");
+            thirdColor = Config.Bind("Options", "Third Color", new Color(191f/255f, 120f/255f, 57f/255f), "Select the third place color of the leaderboard.");
             ModSettingsManager.AddOption(new ColorOption(thirdColor));
+
+            ModSettingsManager.SetModIcon(logo);
 
             Log.Init(Logger);
         }
 
         // The Update() method is run on every frame of the game.
-        public void Update()
-        {
-        }
+        // public void Update()
+        // {
+        // }
     }
 }

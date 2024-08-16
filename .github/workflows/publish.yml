@@ -15,31 +15,31 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-      
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
 
       - name: Restore project
-        run: |
+        run: | 
           dotnet restore
           dotnet tool restore
 
-      - name: Build and pack project
-        run: dotnet pack -c Release
-      
-      - name: Upload Thunderstore artifact
+      - name: Install Thunderstore CLI
+        run: dotnet tool install -g tcli
+
+      - name: Build project
+        run: dotnet build -c Release
+
+      - name: Package project
+        run: tcli build --config-path ./Thunderstore/thunderstore.toml
+
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: thunderstore-build
           path: ./dist/*.zip
-
-      - name: Upload nupkg artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: nupkg-build
-          path: ./*/bin/Release/*.nupkg
 
   upload-release-artifacts:
     name: Upload Release Artifacts
@@ -69,7 +69,7 @@ jobs:
             -f tag_name="${RELEASE_VERSION}" \
             --jq ".body" > "${CHANGELOG_FILE}"
           cat "${CHANGELOG_FILE}"
-          gh release create "${RELEASE_VERSION}" -F "${CHANGELOG_FILE}" thunderstore-build/*.zip nupkg-build/*/bin/Release/*.nupkg
+          gh release create "${RELEASE_VERSION}" -F "${CHANGELOG_FILE}" thunderstore-build/*.zip
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -95,8 +95,10 @@ jobs:
       - name: Restore project tools
         run: dotnet tool restore
     
+      - name: Install Thunderstore CLI
+        run: dotnet tool install -g tcli
+
       - name: Publish to Thunderstore
         env:
-          TCLI_AUTH_TOKEN: ${{ secrets.THUNDERSTORE_TOKEN }}
-        run: |
-          dotnet build -target:PublishThunderstoreArtifact
+          TCLI_AUTH_TOKEN: ${{ secrets.TCLI_AUTH_TOKEN }}
+        run: tcli publish --config-path ./Thunderstore/thunderstore.toml --file thunderstore-build/*.zip

@@ -1,7 +1,10 @@
 # GupRankings
 A Risk of Rain 2 mod that adds a leaderboard component to the game to add a little bit of a competitive spirit to multiplayer runs so you can know who's carrying the run on their back!
 
-![GupRankings Logo](https://media.discordapp.net/attachments/1261191637346947113/1274044462477213767/icon.png?ex=66c0d1de&is=66bf805e&hm=22c28fa5a93e344219e054c32065443ac072f0d04c6a43cfecdc2d44dd6eaed5&=&format=webp&quality=lossless&width=230&height=230)
+<p align="center">
+    <img src="https://media.discordapp.net/attachments/1261191637346947113/1274044462477213767/icon.png?ex=66c0d1de&is=66bf805e&hm=22c28fa5a93e344219e054c32065443ac072f0d04c6a43cfecdc2d44dd6eaed5&=&format=webp&quality=lossless&width=230&height=230"/>
+
+</p>
 
 ## Features
 

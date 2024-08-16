@@ -73,30 +73,6 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  deploy-to-nuget:
-    name: Deploy to Nuget
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-      
-      - name: Download nupkg artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: nupkg-build
-      
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.0.x
-      
-      - name: Publish to NuGet.org
-        env:
-            NUGET_API_TOKEN: ${{ secrets.NUGET_API_TOKEN }}
-        run: |
-          dotnet nuget push ./*/bin/Release/*.nupkg --api-key $NUGET_API_TOKEN --source https://api.nuget.org/v3/index.json
   
   deploy-to-thunderstore:
     name: Deploy to Thunderstore

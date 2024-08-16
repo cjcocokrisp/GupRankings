@@ -1,15 +1,12 @@
-﻿using GupRankings.Base;
-using MonoMod.RuntimeDetour;
+﻿using MonoMod.RuntimeDetour;
 using RoR2;
 using RoR2.UI;
 using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.AddressableAssets;
 using RoR2.Stats;
 using UnityEngine.Networking;
-using UnityEngine.ResourceManagement.AsyncOperations;
 using R2API.Networking.Interfaces;
 using R2API.Networking;
 using GupRankings.SortStatsNetMessage;
@@ -17,7 +14,7 @@ using System.Collections.Generic;
 
 namespace GupRankings.RankingDisplayHooks
 {
-    public class RankingDisplay : IBase
+    public class RankingDisplay
     {
         VerticalLayoutGroup layoutGroup;
         LayoutElement layoutElement;
@@ -92,23 +89,13 @@ namespace GupRankings.RankingDisplayHooks
 
             if (NetworkServer.active)
             {
-                int players = 1;
                 string statString = "";
                 foreach (var playerCharacterMaster in PlayerCharacterMasterController.instances)
                 {
                     try
                     {
-                        // The nullplayer thing is for debug will be removed on release
                         StatSheet stats = playerCharacterMaster.master.playerStatsComponent.currentStats;
-                        if (playerCharacterMaster.GetDisplayName().Equals("") || playerCharacterMaster.GetDisplayName().Equals(" "))
-                        {
-                            statString += $"nullplayer{players}" + "\t" + stats.GetStatValueString(StatsMap[BasePlugin.instance.statEnum.Value]) + "\n";
-                            players++;
-                        }
-                        else
-                        { 
-                            statString += playerCharacterMaster.GetDisplayName() + "\t" + stats.GetStatValueString(StatsMap[BasePlugin.instance.statEnum.Value]) + "\n";
-                        }
+                        statString += playerCharacterMaster.GetDisplayName() + "\t" + stats.GetStatValueString(StatsMap[BasePlugin.instance.statEnum.Value]) + "\n";
                     } 
                     catch
                     {

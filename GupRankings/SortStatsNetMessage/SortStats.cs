@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
 using R2API.Networking.Interfaces;
-using Rewired.Integration.UnityUI;
-using RoR2;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.UI;
-using UnityEngine.UIElements.UIR;
 
 namespace GupRankings.SortStatsNetMessage
 {

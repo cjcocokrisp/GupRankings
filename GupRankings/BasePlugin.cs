@@ -1,19 +1,14 @@
 using BepInEx;
-using RoR2;
 using UnityEngine;
-using R2API;
-using UnityEngine.AddressableAssets;
-using UnityEngine.Networking;
-using UnityEngine.ResourceManagement.AsyncOperations;
 using R2API.Networking;
 using GupRankings.RankingDisplayHooks;
 using GupRankings.SortStatsNetMessage;
 using BepInEx.Configuration;
 using RiskOfOptions;
 using RiskOfOptions.Options;
-using RiskOfOptions.Lib;
 using RiskOfOptions.OptionConfigs;
 using System.IO;
+using R2API.Utils;
 
 namespace GupRankings
 {
@@ -29,16 +24,10 @@ namespace GupRankings
         TotalEliteKills,
     }
 
-    // This attribute is required, and lists metadata for your plugin.
-    // Need to edit this at some point and get it to work right
     [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
+    [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     public class BasePlugin : BaseUnityPlugin
     {
-        // The Plugin GUID should be a unique ID for this plugin,
-        // which is human readable (as it is used in places like the config).
-        // If we see this PluginGUID as it is on thunderstore,
-        // we will deprecate this mod.
-        // Change the PluginAuthor and the PluginName !
         public const string PluginGUID = PluginAuthor + "." + PluginName;
         public const string PluginAuthor = "KarmaReplicant";
         public const string PluginName = "GupRankings";
@@ -56,9 +45,6 @@ namespace GupRankings
       
         public static BasePlugin instance;
 
-        // We need our item definition to persist through our functions, and therefore make it a class field.
-
-        // The Awake() method is run at the very start when the game is initialized.
         public void Awake()
         {
             string directory = System.IO.Path.GetDirectoryName(Info.Location);
@@ -68,11 +54,11 @@ namespace GupRankings
             logo = Sprite.Create(t, new Rect(0f, 0f, t.width, t.height), new Vector2(0, 0));
 
             instance = this;
-            On.RoR2.Networking.NetworkManagerSystemSteam.OnClientConnect += (s, u, t) => { }; // COMMENT THIS OUT ON FINAL RELEASE
+            // On.RoR2.Networking.NetworkManagerSystemSteam.OnClientConnect += (s, u, t) => { }; // Allows for hosting game on localhost (for testing)
             rankDisplay = new RankingDisplay();
             NetworkingAPI.RegisterMessageType<SortStats>();
 
-            statEnum = Config.Bind("Options", "Leaderboard Stat", StatRankings.TotalDamageDealt, "Select the statistic that the leaderboard will be based on.");
+            statEnum = Config.Bind("Options", "Leaderboard Stat", StatRankings.TotalDamageDealt, "Select the statistic that the leaderboard will be based on. Whatever the host has it set to will be displayed in game.");
             ModSettingsManager.AddOption(new ChoiceOption(statEnum));
 
             fontSize = Config.Bind("Options", "Font Size", 0f, "Select the font size for the leaderboard text. Setting it to 0 will set it to the default size of the panel. The percentage equals the size.");
@@ -98,7 +84,6 @@ namespace GupRankings
             Log.Init(Logger);
         }
 
-        // The Update() method is run on every frame of the game.
         // public void Update()
         // {
         // }

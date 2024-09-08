@@ -7,7 +7,7 @@ repository = "https://thunderstore.io"
 [package]
 namespace = "KarmaReplicant"
 name = "GupRankings"
-versionNumber = "1.0.0"
+versionNumber = "1.0.1"
 description = "A mod that adds a Leaderboard based on different statistics to the objective panel."
 websiteUrl = "https://github.com/cjcocokrisp/GupRankings"
 containsNsfwContent = false

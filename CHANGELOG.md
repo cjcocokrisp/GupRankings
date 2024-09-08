@@ -1,5 +1,9 @@
 # GupRankings Changelog
 
+## 1.0.1
+
+- Update the mod to be compatible with the Seekers of the Storm DLC.
+
 ## 1.0.0
 
 - Initial release of the mod.

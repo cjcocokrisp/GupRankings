@@ -13,7 +13,7 @@ websiteUrl = "https://github.com/cjcocokrisp/GupRankings"
 containsNsfwContent = false
 
 [package.dependencies]
-bbepis-BepInExPack = "5.*"
+bbepis-BepInExPack = "5.4.2117"
 Rune580-Risk_Of_Options = "2.8.2"
 tristanmcpherson-R2API = "5.0.5"
 RiskofThunder-R2API_Networking = "1.0.2"

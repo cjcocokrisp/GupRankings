@@ -56,7 +56,7 @@ namespace GupRankings.RankingDisplayHooks
 
         public void rankDisplay()
         {
-            foreach (var item in RoR2.Run.instance.uiInstance.GetComponentsInChildren<VerticalLayoutGroup>())
+            foreach (var item in RoR2.Run.instance.uiInstances[0].GetComponentsInChildren<VerticalLayoutGroup>())
             {
                 if (item.gameObject.name == "RightInfoBar" && textObj == null)
                 {
